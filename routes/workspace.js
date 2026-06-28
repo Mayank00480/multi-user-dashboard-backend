@@ -54,7 +54,7 @@ workSpaceRouter.get("/", async (req, res) => {
   }
 })
 
-workSpaceRouter.get("/:id", userAuth, async (req, res) => {
+workSpaceRouter.get("/:id", async (req, res) => {
   try {
     const workspace = await Workspace.findById(req.params.id)
       .populate("members.user", "name email");
@@ -155,7 +155,7 @@ workSpaceRouter.post("/:id", async (req, res) => {
 })
 
 
-workSpaceRouter.get("/:id/available-users", userAuth, async (req, res) => {
+workSpaceRouter.get("/:id/available-users", async (req, res) => {
   try {
     const workspace = await Workspace.findById(req.params.id);
 
