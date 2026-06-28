@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/user");
 
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+const generateToken = async (userId) => {
+  return await jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 }
@@ -32,7 +32,9 @@ router.post("/signup",async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = generateToken(user._id);
+    const token = await generateToken(user._id);
+
+    await user.save();
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -81,12 +83,10 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const token = await generateToken(user._id);
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
     });
 
     res.json({
@@ -108,6 +108,15 @@ router.post("/login", async (req, res) => {
 
   }
 
+});
+
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({
+    success: true,
+    message: "Logout successful",
+  });
 });
 
 
