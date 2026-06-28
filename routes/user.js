@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-
+const userAuth = require("../middleware/userAuth");
 
 const generateToken = async (userId) => {
   return await jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -118,6 +118,13 @@ router.post("/logout", (req, res) => {
     message: "Logout successful",
   });
 });
+
+router.get("/profile", userAuth, async (req, res) => {
+    res.status(200).json({
+      success: true,
+      user: req.user,
+    });
+})
 
 
 module.exports = router;
